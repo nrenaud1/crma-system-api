@@ -1,0 +1,34 @@
+{
+  "nextPageUrl": null,
+  "recipes": [
+    {
+      "createdBy": {
+        "id": "0058Z000008NCWdQAO",
+        "name": "Dejim Juang",
+        "profilePhotoUrl": "/img/userprofile/default_profile_45_v2.png"
+      },
+      "createdDate": "2022-08-29T18:25:20.000Z",
+      "dataflowLastUpdate": "2022-10-14T15:43:18.000Z",
+      "fileUrl": "/services/data/v50.0/wave/recipes/05v8Z000000sybzQAA/file",
+      "format": "R3",
+      "id": "05v8Z000000sybzQAA",
+      "label": "Opportunities to SF",
+      "lastModifiedBy": {
+        "id": "0058Z000008NCWdQAO",
+        "name": "Dejim Juang",
+        "profilePhotoUrl": "/img/userprofile/default_profile_45_v2.png"
+      },
+      "lastModifiedDate": "2022-10-14T15:43:18.000Z",
+      "name": "Opportunities_to_SF",
+      "publishingTarget": "Dataset",
+      "targetDataflowId": "02K8Z000001vtSvUAI",
+      "type": "recipe",
+      "url": "/services/data/v50.0/wave/recipes/05v8Z000000sybzQAA?format=R3",
+      "validationDetails": [
+        
+      ]
+    }
+  ],
+  "totalSize": 1,
+  "url": "/services/data/v50.0/wave/recipes?q=Opportunities%20to%20SF"
+}

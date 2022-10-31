@@ -1,0 +1,74 @@
+#%RAML 1.0
+title: crma-system-api
+mediaType:
+  - application/json
+version: "1.0"
+protocols:
+  - HTTP
+  - HTTPS
+
+/dataFilesDataset:
+  get:
+    queryParameters:
+      executionPlanId:
+        example: 0eP8Z000000hwSCUAY
+        type: string
+    responses:
+      200:
+        body:
+          application/json:
+            example: !include examples/getDataFilesExecutionPlanIdResponse.json
+              
+
+/dataFileContent:
+  get:
+    queryParameters:
+      partId:
+        example: 0Py8Z0000008X8uSAE
+        type: string
+    responses:
+      200:
+        body:
+          application/json:
+            example: !include examples/getDataFileContentResponse.json
+
+  
+/job:
+  /query:
+    get:
+      queryParameters:
+        recipeName:
+          example: Opportunities to SF
+          type: string
+      responses:
+        200:
+          body:
+            application/json:
+              example: !include examples/getJobQueryResponse.json
+  /start:
+    post:
+      body:
+        application/json:
+          properties:
+            targetDataflowId: 
+              example: 02K8Z000001vtSvUAI
+              type: string
+      responses:
+        200:
+          body:
+            application/json:
+              example: !include examples/postJobStartResponse.json
+
+  /status:
+    get:
+      queryParameters:
+        executionPlanId:
+          type: string
+          example: 0eP8Z000000hwSCUAY
+      responses:
+        200:
+          body:
+            application/json:
+              example: !include examples/getJobStatusResponse.json
+                
+

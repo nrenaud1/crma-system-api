@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_070a41a5_9c6b_4d34_9667_21b3169bfed1_Output_Variables_tokenResponse = Any
+

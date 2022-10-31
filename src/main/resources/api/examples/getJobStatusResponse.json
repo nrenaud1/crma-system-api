@@ -1,0 +1,22 @@
+{
+    "createdDate": "2022-10-14T15:53:48.000Z",
+    "duration": 104,
+    "id": "0eP8Z000000hwSCUAY",
+    "executionPlanId": "0eP8Z000000hwSCUAY",
+    "jobType": "recipe_v3",
+    "label": "Opportunities to SF_recipe",
+    "nodesUrl": "/services/data/v50.0/wave/dataflowjobs/0eP8Z000000hwSCUAY/nodes",
+    "progress": 1.0,
+    "source": {
+        "id": "05v8Z000000sybzQAA",
+        "name": "Opportunities to SF",
+        "url": "/services/data/v50.0/wave/recipes/05v8Z000000sybzQAA"
+    },
+    "startDate": "2022-10-14T15:53:48.000Z",
+    "status": "Success",
+    "syncDataflows": {
+        "dataflows": []
+    },
+    "type": "dataflowjob",
+    "url": "/services/data/v50.0/wave/dataflowjobs/0eP8Z000000hwSCUAY"
+}

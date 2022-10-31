@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	<sub-flow name="crma-system-api-impl_get_authToken" doc:id="3c10babb-c6f6-4f6f-8666-938610a0da49" >
+		<http:request method="POST" doc:name="Get Auth Token" doc:id="2a37b4d5-08f8-4f06-9fda-5d7e99dddbdb" config-ref="HTTP_Request_SalesforceLogin" path="/services/oauth2/token" >
+			<http:body ><![CDATA[#[%dw 2.0
+output application/x-www-form-urlencoded
+---
+{
+	grant_type: "password",
+	client_id: p('salesforce.client_id'),
+	client_secret: p('salesforce.client_secret'),
+	username: p('salesforce.username'),
+	password: p('salesforce.password')	
+}]]]></http:body>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="2259436a-fa9a-4853-99bd-55049938961f" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="tokenResponse" ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+	</sub-flow>
+	<sub-flow name="crma-system-api-impl_get_Files_Dataset" doc:id="b8c87023-c693-4d4c-9700-80884a5d03a9" >
+		<ee:transform doc:name="Transform Message" doc:id="b41b8f7d-b07e-47c7-9854-fa980362a14d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+query: "SELECT FIELDS(STANDARD) FROM DatasetExport"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:query doc:id="abf4981b-2f11-4069-94b9-cb035baf905c" config-ref="Salesforce_Config" doc:name="Query">
+			<salesforce:salesforce-query><![CDATA[:payload.query]]></salesforce:salesforce-query>
+			<salesforce:parameters><![CDATA[#[output application/java
+---
+{
+	"payload.query" : payload.query
+}]]]></salesforce:parameters>
+		</salesforce:query>
+        <foreach doc:name="For Each" doc:id="875dd48a-fea1-4382-a638-59f6e9569125" collection="#[payload]">
+			<choice doc:name="Choice" doc:id="90b99165-f2ca-4556-af57-685875311488">
+						<when expression="#[vars.correctDataSet == null]">
+							<set-variable value="#[payload]" doc:name="Set Variable" doc:id="55b919b0-678d-49ef-a269-4d5b79a64675" variableName="currentIteration" />
+							<salesforce:retrieve doc:name="Retrieve" doc:id="23d177e7-d7cf-4529-b316-597e8f04dbe9" config-ref="Salesforce_Config" type="DataflowInstance">
+				<salesforce:retrieve-request><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+	fields: ["FIELDS(STANDARD)"],
+	ids: [payload.PublisherInfo replace ":OUTPUT0" with ""]
+} as Object {
+	class : "org.mule.extension.salesforce.api.core.RetrieveRequest"
+}]]]></salesforce:retrieve-request>
+			</salesforce:retrieve>
+							<choice doc:name="Choice" doc:id="2608f22b-8c95-4695-bd4d-97e6664ea567">
+				<when expression="#[payload[0].ExecutionPlanId == vars.executionPlanId]">
+					<ee:transform doc:name="Transform Message" doc:id="915b73c8-2d45-4085-8af4-ba353efa2850">
+						<ee:message>
+						</ee:message>
+						<ee:variables>
+							<ee:set-variable variableName="correctDataSet"><![CDATA[%dw 2.0
+output application/json
+---
+vars.currentIteration]]></ee:set-variable>
+						</ee:variables>
+					</ee:transform>
+				</when>
+			</choice>
+						</when>
+					</choice>
+		</foreach>
+		<ee:transform doc:name="Transform Message" doc:id="689bba97-4a11-4503-9419-cf87359bef0d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+query: "SELECT DatasetExportId,Id,Owner,PartNumber FROM DatasetExportPart WHERE DatasetExportId = '" ++ vars.correctDataSet.Id ++ "'"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:query doc:name="Query" doc:id="891821c3-8a4d-4003-be65-cee6caf3cbee" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query><![CDATA[:payload]]></salesforce:salesforce-query>
+			<salesforce:parameters ><![CDATA[#[output application/java
+---
+{
+	payload : payload.query
+}]]]></salesforce:parameters>
+		</salesforce:query>
+		<ee:transform doc:name="Transform Message" doc:id="89d51373-6480-4ca2-bada-841e668337ef" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map (item,index) -> {
+	"DatasetExportId": item.DatasetExportId,
+    "Owner": item.Owner,
+    "PartNumber": item.PartNumber,
+    "partId": item.Id,
+    "type": item."type"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+
+	</sub-flow>
+	<sub-flow name="crma-system-api-impl_get_data_File_Content" doc:id="0cb183de-22c4-4fd4-8144-fbfca1402afe" >
+		<salesforce:retrieve type="DatasetExportPart" doc:name="Retrieve" doc:id="e9e403d3-a052-4c36-a49d-38c101d0ea74" config-ref="Salesforce_Config" >
+			<salesforce:retrieve-request ><![CDATA[#[output application/java
+---
+{
+	fields: ["FIELDS(STANDARD)"],
+	ids: [vars.partId]
+} as Object {
+	class : "org.mule.extension.salesforce.api.core.RetrieveRequest"
+}]]]></salesforce:retrieve-request>
+		</salesforce:retrieve>
+		<ee:transform doc:name="Transform Message" doc:id="18264bf3-247d-47d1-8d58-ec2573f753fe" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+import * from dw::core::Binaries
+---
+read(fromBase64(payload[0].DataFile),'application/csv')]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+	<sub-flow name="crma-system-api-impl_get_job_query" doc:id="8dda86aa-e980-46aa-a51f-fd5dfd97c0f0" >
+		<flow-ref doc:name="crma-system-api-impl_get_authToken" doc:id="47cd55e9-1fe4-4a8d-b825-200247dcd481" name="crma-system-api-impl_get_authToken"/>
+		<http:request method="GET" doc:name="Request" doc:id="df791680-178a-438c-9538-945da7536309" config-ref="HTTP_Request_Salesforce_Requests" path='#["/services/data/v50.0/wave/recipes?q=" ++ vars.recipeName]' >
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	Authorization : "Bearer " ++ vars.tokenResponse.access_token
+}]]]></http:headers>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="864dcf12-5e29-477e-b0fe-c2d7c8cab3fb" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload ++ {"executionPlanId": payload.id}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+	<sub-flow name="crma-system-api-impl_get_job_status" doc:id="070a41a5-9c6b-4d34-9667-21b3169bfed1" >
+		<flow-ref doc:name="crma-system-api-impl_get_authToken" doc:id="a375afb6-c34a-48d8-8261-4e0eb7bf5893" name="crma-system-api-impl_get_authToken"/>
+		<http:request method="GET" doc:name="Request" doc:id="6c45d2e8-4221-4a87-90dd-823cd6b86517" config-ref="HTTP_Request_Salesforce_Requests" path='#["/services/data/v50.0/wave/dataflowjobs/" ++ vars.executionPlanId]' >
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	Authorization : "Bearer " ++ vars.tokenResponse.access_token
+}]]]></http:headers>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="f563fe54-ebff-442a-8cdf-0e05db8fcc8b">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload ++ {"executionPlanId": payload.id}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+	<sub-flow name="crma-system-api-impl_post_job_start" doc:id="74ff3563-43ec-4b57-aaca-909f1ade6981" >
+		<flow-ref doc:name="crma-system-api-impl_get_authToken" doc:id="4662039d-c42f-48e7-8950-8aef66cd3d24" name="crma-system-api-impl_get_authToken" />
+		<http:request method="POST" doc:name="Request" doc:id="ad2cd06c-4652-4b0c-9fbd-af1f9877cb91" config-ref="HTTP_Request_Salesforce_Requests" path="/services/data/v50.0/wave/dataflowjobs" >
+			<http:body ><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+	"dataflowId": vars.originalPayload.targetDataflowId,
+	"command": "start"	
+}]]]></http:body>
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	Authorization : "Bearer " ++ vars.tokenResponse.access_token
+}]]]></http:headers>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="b7531f5e-ae80-47fa-add8-3f49d6e99f1b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload ++ {"executionPlanId": payload.id}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+</mule>

@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_3c10babb_c6f6_4f6f_8666_938610a0da49_Output_Variables_tokenResponse = Any
+

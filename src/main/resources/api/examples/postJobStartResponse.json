@@ -1,0 +1,13 @@
+{
+    "id": "0308Z000004JBs8QAG",
+    "executionPlanId": "0308Z000004JBs8QAG",
+    "jobType": "internal",
+    "nodesUrl": "/services/data/v50.0/wave/dataflowjobs/0308Z000004JBs8QAG/nodes",
+    "progress": 0.0,
+    "status": "Queued",
+    "syncDataflows": {
+        "dataflows": []
+    },
+    "type": "dataflowjob",
+    "url": "/services/data/v50.0/wave/dataflowjobs/0308Z000004JBs8QAG"
+}
