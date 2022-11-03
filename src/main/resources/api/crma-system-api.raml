@@ -26,6 +26,12 @@ protocols:
       partId:
         example: 0Py8Z0000008X8uSAE
         type: string
+      format:
+        required: true
+        default: json
+        example: json
+        type: string
+        enum: [json, csv]
     responses:
       200:
         body:

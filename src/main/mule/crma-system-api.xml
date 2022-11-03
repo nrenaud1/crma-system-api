@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
     <flow name="crma-system-api-main">
         <http:listener config-ref="crma-system-api-httpListenerConfig" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
@@ -11,7 +11,7 @@
             </http:error-response>
         </http:listener>
         <apikit:router config-ref="crma-system-api-config" />
-		<error-handler>
+        <error-handler>
             <on-error-propagate type="APIKIT:BAD_REQUEST">
                 <ee:transform>
                     <ee:message>
@@ -120,23 +120,24 @@ output application/json
         </error-handler>
     </flow>
     <flow name="get:\dataFileContent:crma-system-api-config">
-        <set-variable value="#[attributes.queryParams.partId]" doc:name="Set Variable" doc:id="8d197868-cf17-40cc-91b4-59c4e676447f" variableName="partId"/>
-		<flow-ref doc:name="crma-system-api-impl_get_data_File_Content" doc:id="0d424c69-9283-4678-8558-59615f880c4a" name="crma-system-api-impl_get_data_File_Content"/>
+        <set-variable value="#[attributes.queryParams.partId]" doc:name="Set Variable" doc:id="8d197868-cf17-40cc-91b4-59c4e676447f" variableName="partId" />
+        <set-variable value="#[attributes.queryParams.format]" doc:name="Set Variable" doc:id="8e9dd2f1-c639-4a04-bf48-d6bc01bd0d53" variableName="format"/>
+		<flow-ref doc:name="crma-system-api-impl_get_data_File_Content" doc:id="0d424c69-9283-4678-8558-59615f880c4a" name="crma-system-api-impl_get_data_File_Content" />
     </flow>
     <flow name="get:\dataFilesDataset:crma-system-api-config">
-        <set-variable value="#[attributes.queryParams.executionPlanId]" doc:name="Set Variable" doc:id="4f5ae610-ad35-4909-b990-760a0ce05efe" variableName="executionPlanId"/>
-		<flow-ref doc:name="crma-system-api-impl_get_Files_Dataset" doc:id="d809b23c-328b-474b-8f7c-e79898ee8101" name="crma-system-api-impl_get_Files_Dataset"/>
+        <set-variable value="#[attributes.queryParams.executionPlanId]" doc:name="Set Variable" doc:id="4f5ae610-ad35-4909-b990-760a0ce05efe" variableName="executionPlanId" />
+        <flow-ref doc:name="crma-system-api-impl_get_Files_Dataset" doc:id="d809b23c-328b-474b-8f7c-e79898ee8101" name="crma-system-api-impl_get_Files_Dataset" />
     </flow>
     <flow name="get:\job\query:crma-system-api-config">
-        <set-variable value="#[attributes.queryParams.recipeName]" doc:name="Set Variable" doc:id="bc236f32-49b7-4823-8fdc-a5129caf08b4" variableName="recipeName"/>
-		<flow-ref doc:name="crma-system-api-impl_get_job_query" doc:id="b5f37317-ea6c-4b81-b0bf-0f25e672769d" name="crma-system-api-impl_get_job_query"/>
+        <set-variable value="#[attributes.queryParams.recipeName]" doc:name="Set Variable" doc:id="bc236f32-49b7-4823-8fdc-a5129caf08b4" variableName="recipeName" />
+        <flow-ref doc:name="crma-system-api-impl_get_job_query" doc:id="b5f37317-ea6c-4b81-b0bf-0f25e672769d" name="crma-system-api-impl_get_job_query" />
     </flow>
     <flow name="get:\job\status:crma-system-api-config">
-        <set-variable value="#[attributes.queryParams.executionPlanId]" doc:name="Set Variable" doc:id="5aede557-5163-425b-8392-0bf0eb1769cf" variableName="executionPlanId"/>
-		<flow-ref doc:name="crma-system-api-impl_get_job_status" doc:id="376b09c3-4253-435c-8ba5-d4e0590ef4ec" name="crma-system-api-impl_get_job_status"/>
+        <set-variable value="#[attributes.queryParams.executionPlanId]" doc:name="Set Variable" doc:id="5aede557-5163-425b-8392-0bf0eb1769cf" variableName="executionPlanId" />
+        <flow-ref doc:name="crma-system-api-impl_get_job_status" doc:id="376b09c3-4253-435c-8ba5-d4e0590ef4ec" name="crma-system-api-impl_get_job_status" />
     </flow>
     <flow name="post:\job\start:application\json:crma-system-api-config">
-        <set-variable value="#[payload]" doc:name="Set Variable" doc:id="987363c3-7a5b-48cf-8432-8b08ffe8a6b9" variableName="originalPayload"/>
-		<flow-ref doc:name="crma-system-api-impl_post_job_start" doc:id="011c9870-b6a0-4722-b3cb-07586b4c769e" name="crma-system-api-impl_post_job_start"/>
+        <set-variable value="#[payload]" doc:name="Set Variable" doc:id="987363c3-7a5b-48cf-8432-8b08ffe8a6b9" variableName="originalPayload" />
+        <flow-ref doc:name="crma-system-api-impl_post_job_start" doc:id="011c9870-b6a0-4722-b3cb-07586b4c769e" name="crma-system-api-impl_post_job_start" />
     </flow>
 </mule>

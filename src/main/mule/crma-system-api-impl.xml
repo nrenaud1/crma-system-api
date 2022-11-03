@@ -37,7 +37,7 @@ payload]]></ee:set-variable>
 output application/json
 ---
 {
-query: "SELECT FIELDS(STANDARD) FROM DatasetExport"
+query: "SELECT Id,PublisherInfo FROM DatasetExport"
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
@@ -58,7 +58,7 @@ query: "SELECT FIELDS(STANDARD) FROM DatasetExport"
 output application/json
 ---
 {
-	fields: ["FIELDS(STANDARD)"],
+	fields: ["ExecutionPlanId"],
 	ids: [payload.PublisherInfo replace ":OUTPUT0" with ""]
 } as Object {
 	class : "org.mule.extension.salesforce.api.core.RetrieveRequest"
@@ -116,6 +116,7 @@ payload map (item,index) -> {
 
 	</sub-flow>
 	<sub-flow name="crma-system-api-impl_get_data_File_Content" doc:id="0cb183de-22c4-4fd4-8144-fbfca1402afe" >
+		<logger level="INFO" doc:name="Logger" doc:id="cf528432-9b11-414e-a244-fc3d9f62cda3" />
 		<salesforce:retrieve type="DatasetExportPart" doc:name="Retrieve" doc:id="e9e403d3-a052-4c36-a49d-38c101d0ea74" config-ref="Salesforce_Config" >
 			<salesforce:retrieve-request ><![CDATA[#[output application/java
 ---
@@ -126,15 +127,30 @@ payload map (item,index) -> {
 	class : "org.mule.extension.salesforce.api.core.RetrieveRequest"
 }]]]></salesforce:retrieve-request>
 		</salesforce:retrieve>
-		<ee:transform doc:name="Transform Message" doc:id="18264bf3-247d-47d1-8d58-ec2573f753fe" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+		<choice doc:name="Choice" doc:id="d5dd2fec-736b-42b9-ac12-519489e1ad1c" >
+			<when expression="#[vars.format == 'csv']">
+				<ee:transform doc:name="Transform Message" doc:id="9bf486c3-001c-40f7-a940-476db087c4e2" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/csv
+import * from dw::core::Binaries
+---
+read(fromBase64(payload[0].DataFile),'application/csv')]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="18264bf3-247d-47d1-8d58-ec2573f753fe">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 import * from dw::core::Binaries
 ---
 read(fromBase64(payload[0].DataFile),'application/csv')]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+			</otherwise>
+		</choice>
 	</sub-flow>
 	<sub-flow name="crma-system-api-impl_get_job_query" doc:id="8dda86aa-e980-46aa-a51f-fd5dfd97c0f0" >
 		<flow-ref doc:name="crma-system-api-impl_get_authToken" doc:id="47cd55e9-1fe4-4a8d-b825-200247dcd481" name="crma-system-api-impl_get_authToken"/>

@@ -1,25 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
-	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
-	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
-http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
-	<http:listener-config name="crma-system-api-httpListenerConfig">
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd  http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+    <http:listener-config name="crma-system-api-httpListenerConfig">
         <http:listener-connection host="0.0.0.0" port="8081" />
     </http:listener-config>
-	<http:request-config name="HTTP_Request_SalesforceLogin" doc:name="HTTP Request configuration" doc:id="df212d55-2e66-4fe2-825d-4e897fecee91" >
-		<http:request-connection protocol="${salesforce.requestProtocol}" host="${salesforce.loginUrl}" />
-	</http:request-config>
-	<http:request-config name="HTTP_Request_Salesforce_Requests" doc:name="HTTP Request configuration" doc:id="6bcf5cd7-f9bd-4e08-87e0-d2387c1b6603" >
-		<http:request-connection host="${salesforce.requestUrl}" protocol="${salesforce.requestProtocol}"/>
-	</http:request-config>
-    <apikit:config name="crma-system-api-config" api="api/crma-system-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
-	<configuration-properties doc:name="Configuration properties" doc:id="2b78e129-dc80-42c1-90e5-94ff729c5ea0" file="config/config-dev.yaml" />
-	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="dbdb6ffd-8bd9-4341-a653-4aa715a4e9f1" >
-		<salesforce:basic-connection username="${salesforce.username}" password="${salesforce.password}" securityToken="${salesforce.token}" />
-	</salesforce:sfdc-config>
+    <http:request-config name="HTTP_Request_SalesforceLogin" doc:name="HTTP Request configuration" doc:id="df212d55-2e66-4fe2-825d-4e897fecee91">
+        <http:request-connection protocol="${salesforce.requestProtocol}" host="${salesforce.loginUrl}" />
+    </http:request-config>
+    <http:request-config name="HTTP_Request_Salesforce_Requests" doc:name="HTTP Request configuration" doc:id="6bcf5cd7-f9bd-4e08-87e0-d2387c1b6603">
+        <http:request-connection host="${salesforce.requestUrl}" protocol="${salesforce.requestProtocol}" />
+    </http:request-config>
+    <apikit:config name="crma-system-api-config" api="crma-system-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <configuration-properties doc:name="Configuration properties" doc:id="2b78e129-dc80-42c1-90e5-94ff729c5ea0" file="config/config-dev.yaml" />
+    <salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="dbdb6ffd-8bd9-4341-a653-4aa715a4e9f1">
+        <salesforce:basic-connection username="${salesforce.username}" password="${salesforce.password}" securityToken="${salesforce.token}" />
+    </salesforce:sfdc-config>
 </mule>
